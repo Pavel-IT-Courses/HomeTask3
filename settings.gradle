@@ -1,0 +1,2 @@
+include ':hw8_fragments'
+rootProject.name='HomeTask3'
