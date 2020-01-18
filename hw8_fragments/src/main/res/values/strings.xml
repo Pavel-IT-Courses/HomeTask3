@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">HomeTask3</string>
+    <string name="app_name">Weather and Contacts</string>
     <string name="contacts">Go To Contacts</string>
     <string name="weather">Go To Weather</string>
+    <string name="remove">Remove</string>
+    <string name="add">Add New Location</string>
+    <string name="save">Save Location</string>
+    <string name="back">Back Without Save</string>
+    <string name="scale">C / F</string>
+    <string name="start">To Locations</string>
 </resources>
