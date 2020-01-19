@@ -1,22 +1,25 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.gmail.pavkascool.hometask3.FragmentApplication;
+import com.gmail.pavkascool.hometask3.FragmentDatabase;
+import com.gmail.pavkascool.hometask3.LocationDao;
+import com.gmail.pavkascool.hometask3.Locations;
+import com.gmail.pavkascool.hometask3.R;
+import com.gmail.pavkascool.hometask3.weather.FragmentScale;
+import com.gmail.pavkascool.hometask3.weather.FragmentWeatherForecast;
+import com.gmail.pavkascool.hometask3.weather.FragmentWeatherLocations;
+import com.gmail.pavkascool.hometask3.weather.Weather;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +116,6 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     @Nullable
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
-        System.out.println("Retaining Custom Non Config Instance, weathers = " + weathers);
         return weathers;
     }
 

@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.gmail.pavkascool.hometask3.contacts.ContactsActivity;
+import com.gmail.pavkascool.hometask3.weather.WeatherActivity;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button toContacts;

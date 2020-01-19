@@ -5,18 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ContactsActivity">
-    <Button
+    tools:context=".contacts.ContactsActivity">
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/add"
-        android:text="@string/add"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rec"
-        android:layout_margin="12dp"/>
+        android:id="@+id/frame_layout"/>
 
 
 </LinearLayout>

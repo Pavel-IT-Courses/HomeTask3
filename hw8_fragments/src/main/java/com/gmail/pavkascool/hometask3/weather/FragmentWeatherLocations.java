@@ -1,4 +1,4 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,14 +9,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gmail.pavkascool.hometask3.FragmentApplication;
+import com.gmail.pavkascool.hometask3.FragmentDatabase;
+import com.gmail.pavkascool.hometask3.LocationDao;
+import com.gmail.pavkascool.hometask3.Locations;
+import com.gmail.pavkascool.hometask3.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 

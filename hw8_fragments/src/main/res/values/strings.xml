@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Weather and Contacts</string>
     <string name="contacts">Go To Contacts</string>
     <string name="weather">Go To Weather</string>
@@ -8,4 +8,11 @@
     <string name="back">Back Without Save</string>
     <string name="scale">C / F</string>
     <string name="start">To Locations</string>
+    <string name="add_contact">Add New Contact</string>
+    <string name="phone">Phone</string>
+    <string name="name">Name</string>
+    <string name="save_contact">Save Contact</string>
+    <string name="back__contact">Back w/o Saving</string>
+    <string name="email">Email</string>
+    <string name="correct">Save</string>
 </resources>

@@ -1,6 +1,8 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 import android.graphics.Bitmap;
+
+import com.gmail.pavkascool.hometask3.weather.IconHolder;
 
 
 public class Weather {

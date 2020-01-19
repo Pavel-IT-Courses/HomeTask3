@@ -1,4 +1,4 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 import android.graphics.Bitmap;
 

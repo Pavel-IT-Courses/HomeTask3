@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">c12_notifications</string>
+    <string name="show">Show Basic Notification</string>
+    <string name="showNotif">Show Notification</string>
+    <string name="changeNotif">Change Notification</string>
+    <string name="pendingNotif">Start Broadcast</string>
+    <string name="styledNotif">Styled Notification</string>
+</resources>

@@ -1,7 +1,6 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.pavkascool.hometask3.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -39,8 +39,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import okhttp3.*;
 
-import static com.gmail.pavkascool.hometask3.WeatherActivity.CELSIUS;
-import static com.gmail.pavkascool.hometask3.WeatherActivity.FAHRENHEIT;
+import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.CELSIUS;
+import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.FAHRENHEIT;
 
 
 public class FragmentWeatherForecast extends Fragment implements View.OnClickListener {

@@ -1,4 +1,4 @@
-package com.gmail.pavkascool.hometask3;
+package com.gmail.pavkascool.hometask3.weather;
 
 
 import android.content.Context;
@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 
+import com.gmail.pavkascool.hometask3.R;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import static com.gmail.pavkascool.hometask3.WeatherActivity.CELSIUS;
-import static com.gmail.pavkascool.hometask3.WeatherActivity.FAHRENHEIT;
+import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.CELSIUS;
+import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.FAHRENHEIT;
 
 public class FragmentScale extends Fragment implements View.OnClickListener {
 
@@ -62,7 +64,7 @@ public class FragmentScale extends Fragment implements View.OnClickListener {
         switch(v.getId()) {
             case R.id.start:
                 activity.goToLocations();
-                if(fahrenheit.isChecked()) activity.setScale(FAHRENHEIT);
+                if(fahrenheit.isChecked()) activity.setScale(FAHRENHEIT );
                 break;
             case R.id.celsius:
                 activity.setScale(CELSIUS);
