@@ -1,2 +1,2 @@
-include ':hw8_fragments', ':c12_notifications'
+include ':hw8_fragments', ':c12_notifications', ':hw9_media_player'
 rootProject.name='HomeTask3'
