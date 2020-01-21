@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">hw9_media_player</string>
+    <string name="app_name">My Media Player</string>
     <string name="back">Back To Track List</string>
     <string name="play">Play</string>
+    <string name="prev">previous track</string>
+    <string name="play_pause">Play / Pause</string>
+    <string name="next">next track</string>
+
 </resources>

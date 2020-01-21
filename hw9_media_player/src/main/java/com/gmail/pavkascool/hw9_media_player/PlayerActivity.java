@@ -1,6 +1,7 @@
 package com.gmail.pavkascool.hw9_media_player;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -13,7 +14,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     private Button close, play;
     private TextView track;
-    private MediaPlayer mediaPlayer;
+    //private MediaPlayer mediaPlayer;
     private int trackNo;
 
     @Override
@@ -35,24 +36,20 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.close:
-                releasePlayer();
+
                 finish();
                 break;
             case R.id.play:
                 Song song = MusicApp.getInstance().getTracks().get(trackNo);
                 String info = song.getArtist() + ": " + song.getName();
                 track.setText(info);
-                releasePlayer();
-                mediaPlayer = MediaPlayer.create(this, song.getId());
-                mediaPlayer.start();
+                Intent intent = new Intent(this, MyService.class);
+                intent.putExtra("trackNo", trackNo);
+                startService(intent);
+
+
         }
 
     }
 
-    private void releasePlayer() {
-        if(mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
 }
