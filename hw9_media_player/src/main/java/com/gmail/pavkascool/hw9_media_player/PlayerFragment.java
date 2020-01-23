@@ -8,23 +8,22 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class PlayerFragment extends Fragment implements View.OnClickListener {
+    public class PlayerFragment extends Fragment implements View.OnClickListener {
 
-    private TextView info;
-    private ImageButton prev, play, next, cancel;
-    private MainActivity activity;
-    private boolean isPlayed;
-    private String title;
+        private TextView info;
+        private ImageButton prev, play, next, cancel;
+        private MainActivity activity;
+        private boolean isPlayed;
+        private String title;
 
-    public PlayerFragment() {
-    }
+        public PlayerFragment() {
+        }
 
 
     public static PlayerFragment newInstance() {
@@ -56,9 +55,12 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             isPlayed = savedInstanceState.getBoolean("isPlayed");
             title = savedInstanceState.getString("title");
         }
-        else title = activity.getHeader();
+        else {
+            title = activity.getHeader();
+        }
         info.setText(title);
         setPlayIcon();
+
         return v;
     }
 
@@ -71,26 +73,62 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(activity, MyService.class);
         switch(v.getId()) {
             case R.id.stop:
                 FragmentTransaction fragmentTransaction = activity.getManager().beginTransaction();
                 fragmentTransaction.remove(this);
                 fragmentTransaction.commit();
+                activity.stopService(new Intent(activity, MyService.class));
+                isPlayed = false;
                 break;
             case R.id.play:
                 isPlayed = !isPlayed;
                 setPlayIcon();
-                Intent intent = new Intent(activity, MyService.class);
-                intent.putExtra("trackNo", activity.getTrackId());
+                if (isPlayed) {
+                    intent.putExtra("trackNo", activity.getTrackId());
+                }
+                else {
+                    intent.putExtra("trackNo", -1);
+                }
                 activity.startService(intent);
                 break;
+            case R.id.next:
+                int track = activity.getTrackId();
+                System.out.println("TRack = " + track + " of " + activity.getListSize());
+                if(track + 1 < activity.getListSize()) {
+                    isPlayed = true;
+                    setPlayIcon();
+                    activity.setTrackId(++track);
+                    activity.updateHeader();
+                    System.out.println("NOW TRACK IS " + activity.getTrackId());
+                    activity.stopService(new Intent(activity, MyService.class));
+                    intent.putExtra("trackNo", track);
+                    activity.startService(intent);
+                    title = activity.getHeader();
+                    info.setText(title);
+                }
+                break;
+            case R.id.prev:
+                int trac = activity.getTrackId();
+
+                if(trac > 0) {
+                    isPlayed = true;
+                    setPlayIcon();
+                    activity.setTrackId(--trac);
+                    activity.updateHeader();
+                    System.out.println("NOW TRACK IS " + activity.getTrackId());
+                    activity.stopService(new Intent(activity, MyService.class));
+                    intent.putExtra("trackNo", trac);
+                    activity.startService(intent);
+                    title = activity.getHeader();
+                    info.setText(title);
+                }
+                break;
+
         }
     }
 
-    public void setSong() {
-        title = activity.getHeader();
-        info.setText(title);
-    }
 
     private void setPlayIcon() {
         if(isPlayed) play.setImageResource(android.R.drawable.ic_media_pause);

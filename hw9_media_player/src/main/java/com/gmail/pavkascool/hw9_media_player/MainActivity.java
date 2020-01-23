@@ -1,6 +1,7 @@
 package com.gmail.pavkascool.hw9_media_player;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,16 +30,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int trackId;
 
+    public int getListSize() {
+        return songs.size();
+    }
+
     public int getTrackId() {
         return trackId;
     }
 
-    public String getHeader() {
-        return header;
+    public void setTrackId(int trackId) {
+        this.trackId = trackId;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public String getHeader() {
+        return header;
     }
 
 
@@ -58,21 +63,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(new MusicAdapter());
         fragment = PlayerFragment.newInstance();
-}
+        Intent data = getIntent();
+        if(data != null) {
+            trackId = data.getIntExtra("trackNo", -1);
+            System.out.println("ON RESULT TRACK IS " + trackId);
+            if(trackId != -1) {
+                if(fragmentManager.findFragmentById(R.id.frame) == null){
+                    header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.add(R.id.frame, fragment);
+                    fragmentTransaction.commit();
+                }
+            }
+        }
+
+    }
+
 
     @Override
     public void onClick(View v) {
-        trackId = recyclerView.getChildLayoutPosition(v);
 
-        header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
         if(fragmentManager.findFragmentById(R.id.frame) == null){
+            trackId = recyclerView.getChildLayoutPosition(v);
+            header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.frame, fragment);
             fragmentTransaction.commit();
         }
-        else {
-            fragment.setSong();
-        }
+
+    }
+
+    public void updateHeader() {
+        header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
     }
 
     private class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
