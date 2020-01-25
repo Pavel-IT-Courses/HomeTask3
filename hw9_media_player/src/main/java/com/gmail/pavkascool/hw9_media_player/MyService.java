@@ -1,6 +1,7 @@
 package com.gmail.pavkascool.hw9_media_player;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -25,11 +26,15 @@ import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_STOP;
 
-public class MyService extends Service {
+public class MyService extends Service implements MediaPlayer.OnCompletionListener {
 
     private List<Song> songs;
     private MediaPlayer mediaPlayer;
     private boolean paused;
+    int track;
+    private Notification notification;
+    PendingIntent piPlay, piPause, piOpenActivity, piStop;
+    NotificationCompat.Builder builder;
 
     public MyService() {
     }
@@ -78,15 +83,14 @@ public class MyService extends Service {
 
         switch(action) {
             case ACTION_STOP:
-                System.out.println("STOP ACTION RECEIVED");
                 MusicApp.getInstance().setStatus(STATUS_STOP);
                 paused = false;
-                System.out.println("INSIDE SERVICE STATUS = " + MusicApp.getInstance().getStatus());
                 Intent stopIntent = new Intent(ACTION_STOP);
                 sendBroadcast(stopIntent);
                 stopSelf();
             case ACTION_PAUSE:
                 MusicApp.getInstance().setStatus(STATUS_PAUSE);
+                track = MusicApp.getInstance().getNumber();
                 mediaPlayer.pause();
                 paused = true;
                 Intent pauseIntent = new Intent(ACTION_PAUSE);
@@ -94,56 +98,65 @@ public class MyService extends Service {
 
                 Intent playIntent = new Intent(this, MyService.class);
                 playIntent.setAction(ACTION_PLAY);
-                PendingIntent piPlayIntent = PendingIntent.getService(this, 0, playIntent, 0);
+                piPlay = PendingIntent.getService(this, 0, playIntent, 0);
+
+                initBuilderPlay();
+
+                notification = builder.build();
+                startForeground(1, notification);
 
                 break;
             case ACTION_PLAY:
                 if(paused) {
                     mediaPlayer.start();
+                    MusicApp.getInstance().setStatus(STATUS_PLAY);
+                    Intent play = new Intent(ACTION_PLAY);
+                    sendBroadcast(play);
                 }
                 else {
-                    int track = MusicApp.getInstance().getNumber();
+                    track = MusicApp.getInstance().getNumber();
                     releasePlayer();
-                    mediaPlayer = MediaPlayer.create(MusicApp.getInstance(), songs.get(track).getId());
-                    mediaPlayer.start();
+                    initPlayer();
 
                     Intent openActivity = new Intent(this, MainActivity.class);
-                    PendingIntent piOpenActivity = PendingIntent.getActivity(this, 0, openActivity, 0);
+                    piOpenActivity = PendingIntent.getActivity(this, 0, openActivity, 0);
 
                     Intent pause = new Intent(this, MyService.class);
                     pause.setAction(ACTION_PAUSE);
-                    PendingIntent piPause = PendingIntent.getService(this, 0, pause, 0);
+                    piPause = PendingIntent.getService(this, 0, pause, 0);
 
                     Intent stop = new Intent(this, MyService.class);
                     stop.setAction(ACTION_STOP);
-                    PendingIntent piStop = PendingIntent.getService(this, 0, stop, 0);
+                    PendingIntent piStop = PendingIntent.getService(this, 0, stop, 0);}
 
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "MyChannel")
-                        .setSmallIcon(R.drawable.music)
-                        .setContentTitle("Ozzy Player")
-                        .setContentText(songs.get(track).getName())
-                        .setContentIntent(piOpenActivity)
-                        .setStyle(new MediaStyle())
-                        .addAction(android.R.drawable.ic_media_pause, "Pause", piPause)
-                        .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Stop", piStop);
+                initBuilderPause();
 
-
-                Notification notification = builder.build();
+                notification = builder.build();
                 startForeground(1, notification);
-                }
+
                 paused = false;
                 break;
             case ACTION_NEXT:
                 paused = false;
+                track++;
                 releasePlayer();
-                mediaPlayer = MediaPlayer.create(MusicApp.getInstance(), songs.get(MusicApp.getInstance().getNumber()).getId());
-                mediaPlayer.start();
+                initPlayer();
+
+                initBuilderPause();
+
+                notification = builder.build();
+                startForeground(1, notification);
                 break;
             case ACTION_PREV:
                 paused = false;
+                track--;
                 releasePlayer();
-                mediaPlayer = MediaPlayer.create(MusicApp.getInstance(), songs.get(MusicApp.getInstance().getNumber()).getId());
-                mediaPlayer.start();
+                initPlayer();
+
+                initBuilderPause();
+
+                notification = builder.build();
+                startForeground(1, notification);
                 break;
 
         }
@@ -167,5 +180,39 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+
+    }
+
+    private void initPlayer() {
+        mediaPlayer = MediaPlayer.create(MusicApp.getInstance(), songs.get(MusicApp.getInstance().getNumber()).getId());
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.start();
+    }
+
+    private void initBuilderPause() {
+        builder = new NotificationCompat.Builder(this, "MyChannel")
+                .setSmallIcon(R.drawable.music)
+                .setContentTitle("Ozzy Player")
+                .setContentText(songs.get(track).getName())
+                .setContentIntent(piOpenActivity)
+                .setStyle(new MediaStyle())
+                .addAction(android.R.drawable.ic_media_pause, "Pause", piPause)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Stop", piStop);
+
+    }
+    private void initBuilderPlay() {
+        builder = new NotificationCompat.Builder(this, "MyChannel")
+                .setSmallIcon(R.drawable.music)
+                .setContentTitle("Ozzy Player")
+                .setContentText(songs.get(track).getName())
+                .setContentIntent(piOpenActivity)
+                .setStyle(new MediaStyle())
+                .addAction(android.R.drawable.ic_media_play, "Play", piPlay)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Stop", piStop);
+
     }
 }

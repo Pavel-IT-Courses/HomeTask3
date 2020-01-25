@@ -50,7 +50,6 @@ public class MusicApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("THE FULL APPLICATION STARTS");
         instance = this;
         tracks = new ArrayList<>();
         Song song = new Song(OZZY, "Crazy Train", R.raw.crazy_train);

@@ -1,7 +1,6 @@
 package com.gmail.pavkascool.hw9_media_player;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,16 +11,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_NEXT;
@@ -39,28 +35,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<Song> songs;
     private RecyclerView recyclerView;
     private PlayerFragment fragment;
-    private String header;
+
     private FragmentManager fragmentManager = getSupportFragmentManager();
 
     private BroadcastReceiver br;
-    private int trackId;
-
-    public int getListSize() {
-        return songs.size();
-    }
-
-    public int getTrackId() {
-        return trackId;
-    }
-
-    public void setTrackId(int trackId) {
-        this.trackId = trackId;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
 
     public FragmentManager getManager() {
         return fragmentManager;
@@ -71,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.out.println("ON CREATE status = " + MusicApp.getInstance().getStatus() + " track " + MusicApp.getInstance().getNumber());
         songs = MusicApp.getInstance().getTracks();
         recyclerView = findViewById(R.id.rec);
         int cols = getResources().getConfiguration().orientation;
@@ -79,28 +56,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(new MusicAdapter());
         fragment = PlayerFragment.newInstance();
-//        Intent data = getIntent();
-//        if(data != null) {
-//            trackId = data.getIntExtra("trackNo", -1);
-//            System.out.println("ON RESULT TRACK IS " + trackId);
-//            if(trackId != -1) {
-//                if(fragmentManager.findFragmentById(R.id.frame) == null){
-//                    header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.add(R.id.frame, fragment);
-//                    fragmentTransaction.commit();
-//                }
-//            }
-//        }
+
         br = new BroadcastReceiver() {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                System.out.println("Intent ACTION = " + intent.getAction() + " STATUS = " + MusicApp.getInstance().getStatus());
                 if(intent.getAction() == ACTION_STOP) MusicApp.getInstance().setStatus(STATUS_STOP);
                 MainActivity.this.update();
                 PlayerFragment pf = ((PlayerFragment)MainActivity.this.fragmentManager.findFragmentById(R.id.frame));
-                System.out.println("FRAGMENT IN RECEIVER = " + pf);
                 if(pf != null) pf.update();
             }
         };
@@ -119,19 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(br);
-        System.out.println("ON DESTROY");
+
     }
 
     @Override
     public void onClick(View v) {
         MusicApp instance = MusicApp.getInstance();
-//        if(fragmentManager.findFragmentById(R.id.frame) == null){
-//            trackId = recyclerView.getChildLayoutPosition(v);
-//            header = songs.get(trackId).getName() + ": " + songs.get(trackId).getArtist();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.add(R.id.frame, fragment);
-//            fragmentTransaction.commit();
-//        }
         int track = recyclerView.getChildLayoutPosition(v);
         instance.setNumber(track);
         if(instance.getStatus() == STATUS_PLAY) stopService(new Intent(this, MyService.class));
@@ -144,9 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void update() {
         int status = MusicApp.getInstance().getStatus();
         if(status == STATUS_STOP) {
-            System.out.println("STATUS STOP");
             if(fragmentManager.findFragmentById(R.id.frame) != null) {
-                System.out.println("NOT NULL");
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.remove(fragment);
                 fragmentTransaction.commit();

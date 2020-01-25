@@ -14,15 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.util.concurrent.TimeUnit;
-
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_NEXT;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PREV;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PLAY;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PREP;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_STOP;
 
 public class PlayerFragment extends Fragment implements View.OnClickListener {
@@ -30,8 +27,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         private TextView info;
         private ImageButton prev, play, next, cancel;
         private MainActivity activity;
-        private boolean isPlayed;
-        private String title;
 
         public PlayerFragment() {
         }
@@ -62,26 +57,11 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         next.setOnClickListener(this);
         cancel = v.findViewById(R.id.stop);
         cancel.setOnClickListener(this);
-//        if(savedInstanceState != null) {
-//            isPlayed = savedInstanceState.getBoolean("isPlayed");
-//            title = savedInstanceState.getString("title");
-//        }
-//        else {
-//            title = activity.getHeader();
-//        }
-//        info.setText(title);
-//        setPlayIcon();
         update();
 
         return v;
     }
 
-//    @Override
-//    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putBoolean("isPlayed", isPlayed);
-//        outState.putString("title", title);
-//    }
 
     @Override
     public void onClick(View v) {
@@ -96,15 +76,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 instance.setStatus(STATUS_STOP);
                 break;
             case R.id.play:
-//                isPlayed = !isPlayed;
-////                setPlayIcon();
-////                if (isPlayed) {
-////                    intent.putExtra("trackNo", activity.getTrackId());
-////                }
-////                else {
-////                    intent.putExtra("trackNo", -1);
-////                }
-////                activity.startService(intent);
+
                 int status = instance.getStatus();
                 if(status == STATUS_PLAY) {
                     instance.setStatus(STATUS_PAUSE);
@@ -122,20 +94,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.next:
-//                int track = activity.getTrackId();
-//                System.out.println("TRack = " + track + " of " + activity.getListSize());
-//                if(track + 1 < activity.getListSize()) {
-//                    isPlayed = true;
-//                    setPlayIcon();
-//                    activity.setTrackId(++track);
-//                    activity.updateHeader();
-//                    System.out.println("NOW TRACK IS " + activity.getTrackId());
-//                    activity.stopService(new Intent(activity, MyService.class));
-//                    intent.putExtra("trackNo", track);
-//                    activity.startService(intent);
-//                    title = activity.getHeader();
-//                    info.setText(title);
-//                }
+
                 if(instance.getNumber() + 1 < instance.getTracks().size()) {
                     instance.setNumber(instance.getNumber() + 1);
                     intent.setAction(ACTION_NEXT);
@@ -145,20 +104,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.prev:
-//                int trac = activity.getTrackId();
-//
-//                if(trac > 0) {
-//                    isPlayed = true;
-//                    setPlayIcon();
-//                    activity.setTrackId(--trac);
-//                    activity.updateHeader();
-//                    System.out.println("NOW TRACK IS " + activity.getTrackId());
-//                    activity.stopService(new Intent(activity, MyService.class));
-//                    intent.putExtra("trackNo", trac);
-//                    activity.startService(intent);
-//                    title = activity.getHeader();
-//                    info.setText(title);
-//                }
+
                 if(instance.getNumber() > 0) {
                     instance.setNumber(instance.getNumber() - 1);
                     intent.setAction(ACTION_PREV);
@@ -171,11 +117,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
-    private void setPlayIcon() {
-        if(isPlayed) play.setImageResource(android.R.drawable.ic_media_pause);
-        else play.setImageResource(android.R.drawable.ic_media_play);
-    }
 
     public void update() {
         MusicApp instance = MusicApp.getInstance();
