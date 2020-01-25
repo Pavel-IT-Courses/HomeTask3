@@ -93,8 +93,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
                 track = MusicApp.getInstance().getNumber();
                 mediaPlayer.pause();
                 paused = true;
-                Intent pauseIntent = new Intent(ACTION_PAUSE);
-                sendBroadcast(pauseIntent);
+                sendBroadcast(new Intent(ACTION_PAUSE));
 
                 Intent playIntent = new Intent(this, MyService.class);
                 playIntent.setAction(ACTION_PLAY);
@@ -127,7 +126,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
 
                     Intent stop = new Intent(this, MyService.class);
                     stop.setAction(ACTION_STOP);
-                    PendingIntent piStop = PendingIntent.getService(this, 0, stop, 0);}
+                    piStop = PendingIntent.getService(this, 0, stop, 0);}
 
                 initBuilderPause();
 
@@ -184,7 +183,9 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        paused = false;
+        sendBroadcast(new Intent(ACTION_STOP));
+        stopSelf();
     }
 
     private void initPlayer() {
