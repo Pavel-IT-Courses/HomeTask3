@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gmail.pavkascool.hometask3">
-<uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
+
     <application
         android:name=".FragmentApplication"
         android:allowBackup="true"
@@ -10,7 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".weather.WeatherActivity"></activity>
+        <provider
+            android:name=".contacts.ContactProvider"
+            android:authorities="com.gmail.pavkascool.contacts"
+            android:enabled="true"
+            android:exported="true">
+
+        </provider>
+
+        <activity android:name=".weather.WeatherActivity" />
         <activity android:name=".contacts.ContactsActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.gmail.pavkascool.hometask3.FragmentApplication;
@@ -20,6 +23,7 @@ import java.util.List;
 public class ContactsActivity extends AppCompatActivity {
 
     private FragmentDatabase db = FragmentApplication.getInstance().getDatabase();
+
     private List<Person> persons;
     private Fragment fragment;
     private FragmentTransaction fragmentTransaction;
@@ -83,6 +87,15 @@ public class ContactsActivity extends AppCompatActivity {
             telOrMail = savedInstanceState.getString("telOrMail");
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ContentResolver resolver = getContentResolver();
+        Cursor cursor = resolver.query(Uri.parse("content://com.gmail.pavkascool.contacts/persons"),
+                null, null, null, null);
+        System.out.println("Cursor = " + cursor);
     }
 
     public void savePerson(final Person person) {

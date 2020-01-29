@@ -11,6 +11,7 @@ public class FragmentApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+        System.out.println("Creating the Application...");
         instance = this;
         database = Room.databaseBuilder(this, FragmentDatabase.class, "fragment_database")
                 .build();
