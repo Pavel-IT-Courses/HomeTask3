@@ -4,15 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +14,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
-
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_NEXT;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PAUSE;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PLAY;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PREV;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_STOP;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PREP;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_STOP;
@@ -37,9 +25,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PlayerFragment fragment;
 
     private FragmentManager fragmentManager = getSupportFragmentManager();
-
-    private BroadcastReceiver br;
-
     public FragmentManager getManager() {
         return fragmentManager;
     }
@@ -57,33 +42,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(new MusicAdapter());
         fragment = PlayerFragment.newInstance();
 
-        br = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if(intent.getAction() == ACTION_STOP) MusicApp.getInstance().setStatus(STATUS_STOP);
-                MainActivity.this.update();
-                PlayerFragment pf = ((PlayerFragment)MainActivity.this.fragmentManager.findFragmentById(R.id.frame));
-                if(pf != null) pf.update();
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_NEXT);
-        filter.addAction(ACTION_PLAY);
-        filter.addAction(ACTION_PAUSE);
-        filter.addAction(ACTION_PREV);
-        filter.addAction(ACTION_STOP);
-        LocalBroadcastManager.getInstance(this).registerReceiver(br, filter);
-        update();
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(br);
-
-    }
 
     @Override
     public void onClick(View v) {
@@ -106,14 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void launchService(Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        }
-        else startService(intent);
-    }
-
-    private void installFragment() {
+    public void installFragment() {
 
         if (fragmentManager.findFragmentById(R.id.frame) == null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -123,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void removeFragment() {
+    public void removeFragment() {
         PlayerFragment pFragment = (PlayerFragment)fragmentManager.findFragmentById(R.id.frame);
         if(pFragment != null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

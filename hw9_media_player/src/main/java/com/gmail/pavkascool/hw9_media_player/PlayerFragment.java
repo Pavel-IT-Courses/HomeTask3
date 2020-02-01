@@ -1,14 +1,18 @@
 package com.gmail.pavkascool.hw9_media_player;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_NEXT;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PREV;
+import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_STOP;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_STOP;
@@ -28,6 +33,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         private TextView info;
         private ImageButton prev, play, next, cancel;
         private MainActivity activity;
+        private BroadcastReceiver br;
 
 
     public static PlayerFragment newInstance() {
@@ -55,6 +61,27 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         next.setOnClickListener(this);
         cancel = v.findViewById(R.id.stop);
         cancel.setOnClickListener(this);
+        update();
+
+        br = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                update();
+                if(intent.getAction() == ACTION_STOP) {
+                    MusicApp.getInstance().setStatus(STATUS_STOP);
+                    activity.removeFragment();
+                }
+
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_NEXT);
+        filter.addAction(ACTION_PLAY);
+        filter.addAction(ACTION_PAUSE);
+        filter.addAction(ACTION_PREV);
+        filter.addAction(ACTION_STOP);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(br, filter);
         update();
 
         return v;
@@ -135,4 +162,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         else getContext().startService(intent);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(br);
+    }
 }
