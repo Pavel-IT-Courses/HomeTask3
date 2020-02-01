@@ -34,6 +34,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         private ImageButton prev, play, next, cancel;
         private MainActivity activity;
         private BroadcastReceiver br;
+        private LocalBroadcastManager lbm;
 
 
     public static PlayerFragment newInstance() {
@@ -61,7 +62,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         next.setOnClickListener(this);
         cancel = v.findViewById(R.id.stop);
         cancel.setOnClickListener(this);
-        update();
+
+        lbm = LocalBroadcastManager.getInstance(getContext());
 
         br = new BroadcastReceiver() {
 
@@ -81,7 +83,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         filter.addAction(ACTION_PAUSE);
         filter.addAction(ACTION_PREV);
         filter.addAction(ACTION_STOP);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(br, filter);
+        lbm.registerReceiver(br, filter);
         update();
 
         return v;
@@ -165,6 +167,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(br);
+        lbm.unregisterReceiver(br);
     }
 }
