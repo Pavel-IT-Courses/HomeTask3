@@ -3,6 +3,7 @@ package com.gmail.pavkascool.hw9_media_player;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,9 +28,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         private TextView info;
         private ImageButton prev, play, next, cancel;
         private MainActivity activity;
-
-        public PlayerFragment() {
-        }
 
 
     public static PlayerFragment newInstance() {
@@ -65,14 +63,14 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(activity, MyService.class);
+        Intent intent = new Intent(getContext(), MyService.class);
         MusicApp instance = MusicApp.getInstance();
         switch(v.getId()) {
             case R.id.stop:
                 FragmentTransaction fragmentTransaction = activity.getManager().beginTransaction();
                 fragmentTransaction.remove(this);
                 fragmentTransaction.commit();
-                activity.stopService(new Intent(activity, MyService.class));
+                getContext().stopService(new Intent(getContext(), MyService.class));
                 instance.setStatus(STATUS_STOP);
                 break;
             case R.id.play:
@@ -81,16 +79,14 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 if(status == STATUS_PLAY) {
                     instance.setStatus(STATUS_PAUSE);
                     update();
-                    activity.update();
                     intent.setAction(ACTION_PAUSE);
-                    activity.launchService(intent);
+                    launchService(intent);
                 }
                 else {
                     intent.setAction(ACTION_PLAY);
-                    activity.launchService(intent);
+                    launchService(intent);
                     instance.setStatus(STATUS_PLAY);
                     update();
-                    activity.update();
                 }
                 break;
             case R.id.next:
@@ -98,7 +94,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 if(instance.getNumber() + 1 < instance.getTracks().size()) {
                     instance.setNumber(instance.getNumber() + 1);
                     intent.setAction(ACTION_NEXT);
-                    activity.launchService(intent);
+                    launchService(intent);
                     instance.setStatus(STATUS_PLAY);
                     update();
                 }
@@ -108,7 +104,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 if(instance.getNumber() > 0) {
                     instance.setNumber(instance.getNumber() - 1);
                     intent.setAction(ACTION_PREV);
-                    activity.launchService(intent);
+                    launchService(intent);
                     instance.setStatus(STATUS_PLAY);
                     update();
                 }
@@ -130,6 +126,13 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         int status = instance.getStatus();
         if (status == STATUS_PLAY) play.setImageResource(android.R.drawable.ic_media_pause);
         else play.setImageResource(android.R.drawable.ic_media_play);
+    }
+
+    public void launchService(Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().startForegroundService(intent);
+        }
+        else getContext().startService(intent);
     }
 
 }

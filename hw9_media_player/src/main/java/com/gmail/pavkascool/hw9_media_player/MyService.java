@@ -11,6 +11,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import java.util.List;
@@ -31,13 +32,11 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
     private List<Song> songs;
     private MediaPlayer mediaPlayer;
     private boolean paused;
-    int track;
+    private int track;
     private Notification notification;
-    PendingIntent piPlay, piPause, piOpenActivity, piStop;
-    NotificationCompat.Builder builder;
+    private PendingIntent piPlay, piPause, piOpenActivity, piStop;
+    private NotificationCompat.Builder builder;
 
-    public MyService() {
-    }
 
     @Override
     public void onCreate() {
@@ -48,52 +47,20 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
-//        int trackNo = intent.getIntExtra("trackNo", -1);
-//        if(trackNo == -1 || action == "com.gmail.pavkascool.pause") {
-//            mediaPlayer.pause();
-//            paused = true;
-//        }
-//        else {
-//            if(paused) {
-//                mediaPlayer.start();
-//            }
-//            else {
-//                releasePlayer();
-//                mediaPlayer = MediaPlayer.create(MusicApp.getInstance(), songs.get(trackNo).getId());
-//                mediaPlayer.start();
-//                Intent openActivity = new Intent(this, MainActivity.class);
-//                openActivity.putExtra("trackNo", trackNo);
-//                PendingIntent piOpenActivity = PendingIntent.getActivity(this,0, openActivity, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//                Intent pause = new Intent("com.gmail.pavkascool.pause");
-//                PendingIntent piPause = PendingIntent.getService(this, 0, pause, 0);
-//                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "MyChannel")
-//                        .setSmallIcon(R.drawable.music)
-//                        .setContentTitle("Ozzy Player")
-//                        .setContentText(songs.get(trackNo).getName())
-//                        .setStyle(new MediaStyle())
-//                        .setContentIntent(piOpenActivity)
-//                        .addAction(android.R.drawable.ic_media_pause, "Pause", piPause);
-//
-//                Notification notification = builder.build();
-//                startForeground(1, notification);
-//            }
-//            paused = false;
-//        }
 
         switch(action) {
             case ACTION_STOP:
                 MusicApp.getInstance().setStatus(STATUS_STOP);
                 paused = false;
                 Intent stopIntent = new Intent(ACTION_STOP);
-                sendBroadcast(stopIntent);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(stopIntent);
                 stopSelf();
             case ACTION_PAUSE:
                 MusicApp.getInstance().setStatus(STATUS_PAUSE);
                 track = MusicApp.getInstance().getNumber();
                 mediaPlayer.pause();
                 paused = true;
-                sendBroadcast(new Intent(ACTION_PAUSE));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_PAUSE));
 
                 Intent playIntent = new Intent(this, MyService.class);
                 playIntent.setAction(ACTION_PLAY);
@@ -110,7 +77,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
                     mediaPlayer.start();
                     MusicApp.getInstance().setStatus(STATUS_PLAY);
                     Intent play = new Intent(ACTION_PLAY);
-                    sendBroadcast(play);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(play);
                 }
                 else {
                     track = MusicApp.getInstance().getNumber();
@@ -184,7 +151,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
     @Override
     public void onCompletion(MediaPlayer mp) {
         paused = false;
-        sendBroadcast(new Intent(ACTION_STOP));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_STOP));
         stopSelf();
     }
 

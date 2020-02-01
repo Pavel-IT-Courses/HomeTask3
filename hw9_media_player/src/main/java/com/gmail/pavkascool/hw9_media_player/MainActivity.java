@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,7 +26,6 @@ import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_PREV;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.ACTION_STOP;
-import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PAUSE;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PLAY;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_PREP;
 import static com.gmail.pavkascool.hw9_media_player.MusicApp.STATUS_STOP;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         filter.addAction(ACTION_PAUSE);
         filter.addAction(ACTION_PREV);
         filter.addAction(ACTION_STOP);
-        registerReceiver(br, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(br, filter);
         update();
 
     }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(br);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(br);
 
     }
 
@@ -99,44 +99,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void update() {
         int status = MusicApp.getInstance().getStatus();
-        if(status == STATUS_STOP) {
-            if(fragmentManager.findFragmentById(R.id.frame) != null) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.remove(fragment);
-                fragmentTransaction.commit();
-                fragmentManager.executePendingTransactions();
-            }
-        }
-        if(status == STATUS_PREP) {
-            if (fragmentManager.findFragmentById(R.id.frame) == null) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frame, fragment);
-                fragmentTransaction.commit();
-                fragmentManager.executePendingTransactions();
-            }
-        }
-        if(status == STATUS_PAUSE) {
-            if (fragmentManager.findFragmentById(R.id.frame) == null) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frame, fragment);
-                fragmentTransaction.commit();
-                fragmentManager.executePendingTransactions();
-            }
-        }
-        if(status == STATUS_PLAY) {
-            if (fragmentManager.findFragmentById(R.id.frame) == null) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.frame, fragment);
-                fragmentTransaction.commit();
-                fragmentManager.executePendingTransactions();
-            }
+        if (status == STATUS_STOP) {
+            removeFragment();
+        } else {
+            installFragment();
         }
     }
+
     public void launchService(Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         }
         else startService(intent);
+    }
+
+    private void installFragment() {
+
+        if (fragmentManager.findFragmentById(R.id.frame) == null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.frame, fragment);
+            fragmentTransaction.commit();
+            fragmentManager.executePendingTransactions();
+        }
+    }
+
+    private void removeFragment() {
+        PlayerFragment pFragment = (PlayerFragment)fragmentManager.findFragmentById(R.id.frame);
+        if(pFragment != null) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(pFragment);
+            fragmentTransaction.commit();
+            fragmentManager.executePendingTransactions();
+        }
     }
 
     private class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
