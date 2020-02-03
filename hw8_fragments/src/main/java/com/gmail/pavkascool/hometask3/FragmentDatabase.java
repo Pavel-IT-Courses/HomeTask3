@@ -8,4 +8,6 @@ public abstract class FragmentDatabase extends RoomDatabase {
 
     public abstract LocationDao locationDao();
     public abstract PersonDao personDao();
+
+
 }

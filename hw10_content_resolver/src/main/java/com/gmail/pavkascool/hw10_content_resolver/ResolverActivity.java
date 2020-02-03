@@ -40,8 +40,7 @@ public class ResolverActivity extends AppCompatActivity {
 
     private List<Contact> getContacts() {
         List<Contact> contactList = new ArrayList<>();
-        String[] projection = new String[]{"*"};
-        Cursor cursor = contentResolver.query(CONTACT_URI, projection, null, null, null);
+        Cursor cursor = contentResolver.query(CONTACT_URI, null, null, null, null);
         if(cursor != null) {
             if (cursor.moveToFirst()) {
                 int nameIndex = cursor.getColumnIndex("name");
@@ -89,9 +88,9 @@ public class ResolverActivity extends AppCompatActivity {
         public void onClick(View v) {
             int index = recyclerView.getChildLayoutPosition(v);
             long id = contacts.get(index).getId();
-            contentResolver.delete(Uri.parse("content://com.gmail.pavkascool.contacts/persons" + "/" + id),
+            int deleted = contentResolver.delete(Uri.parse("content://com.gmail.pavkascool.contacts/persons" + "/" + id),
                     null, null);
-            contacts.remove(index);
+            if(deleted == 1) contacts.remove(index);
             contactAdapter.notifyDataSetChanged();
         }
     }

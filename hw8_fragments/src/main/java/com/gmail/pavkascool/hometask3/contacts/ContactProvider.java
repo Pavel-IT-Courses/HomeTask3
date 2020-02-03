@@ -20,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+
 public class ContactProvider extends ContentProvider {
 
     static final String AUTHORITY = "com.gmail.pavkascool.contacts";
@@ -33,29 +36,29 @@ public class ContactProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, PATH + "/#", 2);
     }
 
-    FragmentDatabase db;
+    private FragmentDatabase db;
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         if(uriMatcher.match(uri) == 2) {
             String idString = uri.getLastPathSegment();
             final long id = Long.parseLong(idString);
-            new Thread(new Runnable() {
+            Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Person p = db.personDao().getById(id);
                     db.personDao().delete(p);
                 }
-            }).start();
+            });
+            thread.start();
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     @Override
     public String getType(Uri uri) {
-        // TODO: Implement this to handle requests for the MIME type of the data
-        // at the given URI.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return "vnd.pavkascool.myType";
     }
 
     @Override
@@ -66,20 +69,22 @@ public class ContactProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
 
+        db = Room.databaseBuilder(getContext(), FragmentDatabase.class, "fragment_database")
+                .build();
         return true;
     }
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        db = FragmentApplication.getInstance().getDatabase();
 
         Cursor cursor = null;
         if(uriMatcher.match(uri) == 1) {
             FutureTask<Cursor> future = new FutureTask<Cursor>(new Callable<Cursor>() {
                 @Override
                 public Cursor call() throws Exception {
-                    System.out.println("Inside Callable db = " + db);
+
                     return db.personDao().getAllRecords();
                 }
             });

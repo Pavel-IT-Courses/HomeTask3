@@ -1,2 +1,2 @@
-include ':hw8_fragments', ':c12_notifications', ':hw9_media_player', ':c13_content_provider', ':c13_content_provider2', ':c14_mvvm', ':hw10_content_resolver'
+include ':hw8_fragments', ':c12_notifications', ':hw9_media_player', ':c13_content_provider', ':c13_content_provider2', ':c14_mvvm', ':hw10_content_resolver', ':c15_google_map'
 rootProject.name='HomeTask3'

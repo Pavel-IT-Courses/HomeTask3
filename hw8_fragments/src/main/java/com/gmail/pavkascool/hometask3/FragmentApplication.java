@@ -9,9 +9,10 @@ public class FragmentApplication extends Application {
     private static FragmentApplication instance;
     private static FragmentDatabase database;
 
+
+    @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("Creating the Application...");
         instance = this;
         database = Room.databaseBuilder(this, FragmentDatabase.class, "fragment_database")
                 .build();
