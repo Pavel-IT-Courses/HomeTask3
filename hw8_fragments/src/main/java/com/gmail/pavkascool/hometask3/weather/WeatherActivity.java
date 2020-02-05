@@ -1,148 +1,70 @@
 package com.gmail.pavkascool.hometask3.weather;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
-
-import com.gmail.pavkascool.hometask3.FragmentApplication;
-import com.gmail.pavkascool.hometask3.FragmentDatabase;
-import com.gmail.pavkascool.hometask3.LocationDao;
-import com.gmail.pavkascool.hometask3.Locations;
-import com.gmail.pavkascool.hometask3.R;
-import com.gmail.pavkascool.hometask3.weather.FragmentScale;
-import com.gmail.pavkascool.hometask3.weather.FragmentWeatherForecast;
-import com.gmail.pavkascool.hometask3.weather.FragmentWeatherLocations;
-import com.gmail.pavkascool.hometask3.weather.Weather;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
-    @Override
-    public void onClick(View v) {
+import com.gmail.pavkascool.hometask3.R;
 
-    }
-
-    private FragmentDatabase db = FragmentApplication.getInstance().getDatabase();
-    public final static int CELSIUS = 0;
-    public final static int FAHRENHEIT = 1;
-    private Fragment fragment;
-    private FragmentTransaction fragmentTransaction;
-    private int scale;
-    private List<String> places;
-    private List<Weather> weathers;
-    private String location;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public List<Weather> getWeathers() {
-        return weathers;
-    }
-
-    public void setWeathers(List<Weather> weathers) {
-        this.weathers = weathers;
-    }
-
+public class WeatherActivity extends AppCompatActivity implements View.OnClickListener, FragmentMediator {
+    private Button go;
+    private LinearLayout ll;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        weathers = (List<Weather>)getLastCustomNonConfigurationInstance();
-        if(weathers == null) weathers = new ArrayList<>();
-        places = new ArrayList<>();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<Locations> locs = db.locationDao().getAll();
-                if (locs != null && !locs.isEmpty()) {
-                    for (Locations lc : locs) {
-                        places.add(lc.getLocation());
-                    }
-                }
-            }
-        });
-        t.start();
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, new FragmentScale()).commit();
 
-        if(savedInstanceState == null) {
-            fragment = FragmentScale.getInstance();
-            fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.frame_layout, fragment, fragment.getClass().getName());
-            fragmentTransaction.commit();
         }
-        else {
-            scale = savedInstanceState.getInt("scale");
+        if(savedInstanceState == null || getFragmentManager().findFragmentById(R.id.frame_layout) instanceof FragmentScale) {
+            go = new Button(this);
+            go.setText("Save Preferences");
+
+            ViewGroup.LayoutParams lpView = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            ll = findViewById(R.id.layout_for_button);
+            go.setLayoutParams(lpView);
+            ll.addView(go);
+            go.setOnClickListener(this);
         }
     }
 
-    public List<String> getPlaces() {
-        return places;
+
+    @Override
+    public void onClick(View v) {
+        ll.removeView(go);
+        FragmentScale fragmentScaleNew = (FragmentScale)getFragmentManager().findFragmentById(R.id.frame_layout);
+        getFragmentManager().beginTransaction()
+                .remove(fragmentScaleNew).commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, FragmentWeatherLocations.newInstance()).commit();
     }
 
-    public int getScale() {
-        return scale;
+    @Override
+    public void goToForecast(String location) {
+        FragmentWeatherForecast fragment = FragmentWeatherForecast.newInstance(location);
+        installFragment(fragment);
     }
 
-    public void setScale(int scale) {
-        this.scale = scale;
-    }
-
-    public void goToForecast(String loc) {
-        location = loc;
-        fragment = new FragmentWeatherForecast();
-        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment, fragment.getClass().getName());
-        fragmentTransaction.commit();
-    }
-
-
+    @Override
     public void goToLocations() {
+        FragmentWeatherLocations fragment = FragmentWeatherLocations.newInstance();
+        installFragment(fragment);
+    }
 
-        fragment = new FragmentWeatherLocations();
-        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment, fragment.getClass().getName());
+    private void installFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
-
-    @Nullable
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return weathers;
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("scale", scale);
-    }
-
-    public void saveLocation(String loc) {
-        for(String s: places) {
-            if(s.equals(loc)) {
-                Toast.makeText(this, "The Location is already in the list", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-        final Locations newLocation = new Locations();
-        newLocation.setLocation(loc);
-        final LocationDao dao = db.locationDao();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dao.insert(newLocation);
-            }
-        });
-        t.start();
-        places.add(loc);
-    }
-
 }

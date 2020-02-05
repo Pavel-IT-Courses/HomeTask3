@@ -1,10 +1,8 @@
 package com.gmail.pavkascool.hometask3.weather;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.pavkascool.hometask3.FragmentApplication;
+import com.gmail.pavkascool.hometask3.FragmentDatabase;
+import com.gmail.pavkascool.hometask3.LocationDao;
+import com.gmail.pavkascool.hometask3.Locations;
 import com.gmail.pavkascool.hometask3.R;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -37,13 +38,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import okhttp3.*;
-
-import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.CELSIUS;
-import static com.gmail.pavkascool.hometask3.weather.WeatherActivity.FAHRENHEIT;
-
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FragmentWeatherForecast extends Fragment implements View.OnClickListener {
+    private static FragmentDatabase db = FragmentApplication.getInstance().getDatabase();
+    private String location;
 
     private RecyclerView recyclerView;
     private WeatherAdapter weatherAdapter;
@@ -52,27 +55,32 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
     private EditText city;
     private TextView town, time, temp, desc;
     private ImageView weatherImage;
-    private IconHolder iconHolder;
-
+    private FragmentMediator fragmentMediator;
     private List<Weather> weathers;
-    private WeatherActivity activity;
-    private final static String TAG = "MyTag";
+
+
 
 
     private final static String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&&APPID=%s";
     private final static String FORECAST = "https://api.openweathermap.org/data/2.5/forecast?q=%s&&APPID=%s";
     private final static String ID = "da89ad0f2cb19fb309267dddfb2ac0a9";
 
+    public static FragmentWeatherForecast newInstance(String location) {
+        FragmentWeatherForecast fragment = new FragmentWeatherForecast();
+        fragment.location = location;
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        weathers = new ArrayList<>();
         setRetainInstance(true);
     }
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        activity = (WeatherActivity)context;
+        fragmentMediator = (FragmentMediator) context;
     }
 
 
@@ -81,12 +89,12 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_weather_forecast, null);
-        weathers = activity.getWeathers();
-        iconHolder = IconHolder.getInstance();
+        //weathers = activity.getWeathers();
+
 
         recyclerView = v.findViewById(R.id.recycler);
         search = v.findViewById(R.id.search);
-        System.out.println("SEARCH IS " + search);
+
         save = v.findViewById(R.id.save);
         back = v.findViewById(R.id.back);
         town = v.findViewById(R.id.town);
@@ -97,20 +105,14 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
         weatherImage = v.findViewById(R.id.weather);
 
 
-        if(!weathers.isEmpty()) {
+        if (!weathers.isEmpty()) {
             Weather current = weathers.get(0);
             town.setText(current.getLocation().toUpperCase());
             time.setText(current.getTime());
             temp.setText(current.getTemp());
             desc.setText(current.getDesc());
-            if(iconHolder.get(current.getIconCode()) != null) {
-                weatherImage.setImageBitmap(iconHolder.get(current.getIconCode()));
-                Log.d(TAG, "ICON Already Exists");
-            }
-            else {
-                Picasso.with(activity).load("http://openweathermap.org/img/wn/" + current.getIconCode() + "@2x.png").into(weatherImage);
-                Log.d(TAG, "ICON Is To Be Loaded");
-            }
+            Picasso.with(getContext()).load("http://openweathermap.org/img/wn/" + current.getIconCode() + "@2x.png")
+                    .into(weatherImage);
         }
 
         search.setOnClickListener(this);
@@ -118,17 +120,16 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
         back.setOnClickListener(this);
 
         int cols = getResources().getConfiguration().orientation;
-        GridLayoutManager manager = new GridLayoutManager(activity, cols);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), cols);
         recyclerView.setLayoutManager(manager);
         weatherAdapter = new WeatherAdapter();
         recyclerView.setAdapter(weatherAdapter);
 
-        String s = activity.getLocation();
-        if(s != null) {
-            city.setText(s);
+        if(location != null) {
+            city.setText(location);
             try {
-                searchWeatherForLocation(s);
-                searchForecastForLocation(s);
+                searchWeatherForLocation(location);
+                searchForecastForLocation(location);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -150,19 +151,15 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            WeatherViewHolder weatherViewHolder = (WeatherViewHolder)holder;
+            WeatherViewHolder weatherViewHolder = (WeatherViewHolder) holder;
             Weather w = weathers.get(position + 1);
             weatherViewHolder.time.setText(w.getTime());
             weatherViewHolder.temp.setText(w.getTemp());
             weatherViewHolder.desc.setText(w.getDesc());
             String iconCode = w.getIconCode();
-            if(iconHolder.containsKey(iconCode)) {
-                weatherViewHolder.weath.setImageBitmap(iconHolder.get(iconCode));
-            }
-            else {
-                Picasso.with(activity).load("http://openweathermap.org/img/wn/" + iconCode + "@2x.png")
-                        .into(weatherViewHolder.weath);
-            }
+            Picasso.with(getContext()).load("http://openweathermap.org/img/wn/" + iconCode + "@2x.png")
+                    .into(weatherViewHolder.weath);
+
         }
 
         @Override
@@ -199,36 +196,56 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
             }
         }
         else if(v.getId() == R.id.save) {
-            activity.goToLocations();
-            activity.saveLocation(loc);
+            saveLocation(loc);
+            fragmentMediator.goToLocations();
         }
         else {
-            activity.goToLocations();
+            fragmentMediator.goToLocations();
         }
+    }
+
+    private void saveLocation(final String loc) {
+
+        final Locations newLocation = new Locations();
+        newLocation.setLocation(loc);
+        final LocationDao dao = db.locationDao();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Locations> places = dao.getAll();
+                for(Locations p: places) {
+                    if(p.getLocation().equals(loc)) {
+                        return;
+                    }
+                }
+                dao.insert(newLocation);
+            }
+        });
+        t.start();
     }
 
     private void searchWeatherForLocation(final String location) throws IOException {
 
         Date date = new Date();
         final String t = "Time: " + new SimpleDateFormat("dd.MM HH.mm", new Locale("ru", "BY")).format(date);
-        Log.d(TAG, "Current Time is " + t);
+
 
         final Weather currentWeather = new Weather(location);
         currentWeather.setTime(t);
-        Log.d(TAG, "Set Time is " + currentWeather.getTime());
+
 
         String address = String.format(BASE_URL, location, ID);
-        Log.d(TAG, address);
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(address).build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(activity, "Connection failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Connection failed", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -255,69 +272,35 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
                     double temperature = main.getDouble("temp");
                     final String temper = obtainTemperature(temperature);
                     currentWeather.setTemp(temper);
-
-
-
-                    activity.runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             town.setText(location.toUpperCase());
-
                             desc.setText(description);
-
                             temp.setText(temper);
-
                             time.setText(t);
 
-
-                            if (!iconHolder.containsKey(iconCode)) {
-                                Log.d(TAG, iconHolder.size() + " and doesn't contain this icon");
-                                Picasso.with(activity).load(iconUrl).into(weatherImage);
-                                Log.d(TAG, "Finished loading to UI and array size of weathers is " + weathers.size());
-                                Picasso.with(activity).load(iconUrl).into(new Target() {
-                                    @Override
-                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                        iconHolder.put(iconCode, bitmap);
-                                        Log.d(TAG, iconHolder.size() + " updated");
-                                    }
-
-                                    @Override
-                                    public void onBitmapFailed(Drawable errorDrawable) {
-                                        Log.d(TAG, iconHolder.size() + " not updated");
-                                    }
-
-                                    @Override
-                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                    }
-                                });
-                            }
-                            else {
-                                weatherImage.setImageBitmap(iconHolder.get(iconCode));
-                                Log.d(TAG, iconHolder.size() + " and CONTAINS this icon");
-                            }
+                            Picasso.with(getContext()).load(iconUrl).into(weatherImage);
                         }
                     });
 
                 } catch (JSONException e) {
-                    activity.runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(activity, "Wrong Request or Response", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Wrong Request or Response", Toast.LENGTH_SHORT).show();
                         }
                     });
 
                 }
 
                 weathers.add(currentWeather);
-                System.out.println("SIZE OF WEATHERS = " + weathers);
             }
         });
     }
 
     private void searchForecastForLocation(final String location) {
         String address = String.format(FORECAST, location, ID);
-        Log.d(TAG, address);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(address).build();
         Call call = client.newCall(request);
@@ -353,20 +336,20 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
                         weathers.add(w);
                     }
 
-                    activity.runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             weatherAdapter.notifyDataSetChanged();
-                            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(city.getWindowToken(),
                                     InputMethodManager.RESULT_UNCHANGED_SHOWN);
                         }
                     });
                 } catch (JSONException e) {
-                    activity.runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(activity, "Wrong Request or Response", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Wrong Request or Response", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -375,10 +358,10 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                activity.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(activity, "Connection failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Connection failed", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -388,13 +371,8 @@ public class FragmentWeatherForecast extends Fragment implements View.OnClickLis
 
     private String obtainTemperature(double kelvin) {
         String result = null;
-        switch(activity.getScale()) {
-            case CELSIUS:
-                result = "t = " + Math.round(kelvin - 273.15) + " C";
-                break;
-            case FAHRENHEIT:
-                result = "t = " + Math.round((kelvin - 273.15) * 9 / 5 + 32) + " F";
-        }
+        Boolean fahr = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("scale", false);
+        result = fahr? "t = " + Math.round((kelvin - 273.15) * 9 / 5 + 32) + " F": "t = " + Math.round(kelvin - 273.15) + " C";
         return result;
     }
 

@@ -25,7 +25,7 @@ import com.gmail.pavkascool.hometask3.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentContactsNew extends Fragment implements View.OnClickListener {
+public class FragmentContacts extends Fragment implements View.OnClickListener {
     private Button addContact;
     private RecyclerView recyclerView;
     private PersonAdapter personAdapter;
@@ -33,8 +33,8 @@ public class FragmentContactsNew extends Fragment implements View.OnClickListene
     private FragmentInteractor interactor;
     private FragmentDatabase db;
 
-    public static FragmentContactsNew newInstance() {
-        FragmentContactsNew fragment = new FragmentContactsNew();
+    public static FragmentContacts newInstance() {
+        FragmentContacts fragment = new FragmentContacts();
         return fragment;
     }
 
@@ -50,7 +50,7 @@ public class FragmentContactsNew extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_contacts_new, container, false);
+        View v = inflater.inflate(R.layout.fragment_contacts, container, false);
         addContact = v.findViewById(R.id.add);
         addContact.setOnClickListener(this);
         recyclerView = v.findViewById(R.id.rec);
@@ -113,7 +113,7 @@ public class FragmentContactsNew extends Fragment implements View.OnClickListene
         @Override
         public PersonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_person, parent, false);
-            v.setOnClickListener(FragmentContactsNew.this);
+            v.setOnClickListener(FragmentContacts.this);
             return new PersonViewHolder(v);
         }
 

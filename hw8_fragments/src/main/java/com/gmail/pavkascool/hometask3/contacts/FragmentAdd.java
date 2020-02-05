@@ -21,7 +21,7 @@ import com.gmail.pavkascool.hometask3.Person;
 import com.gmail.pavkascool.hometask3.R;
 
 
-public class FragmentAddNew extends Fragment implements View.OnClickListener {
+public class FragmentAdd extends Fragment implements View.OnClickListener {
     private EditText editName, editContact;
     private RadioButton tel, mail;
     private Button save, back;
@@ -32,8 +32,8 @@ public class FragmentAddNew extends Fragment implements View.OnClickListener {
 
 
 
-    public static FragmentAddNew newInstance() {
-        FragmentAddNew fragment = new FragmentAddNew();
+    public static FragmentAdd newInstance() {
+        FragmentAdd fragment = new FragmentAdd();
         return fragment;
     }
 
@@ -47,7 +47,7 @@ public class FragmentAddNew extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_add_new, container, false);
+        View v = inflater.inflate(R.layout.fragment_add, container, false);
         db = FragmentApplication.getInstance().getDatabase();
         editContact = v.findViewById(R.id.edit_contact);
         editName = v.findViewById(R.id.edit_name);

@@ -1,7 +1,6 @@
 package com.gmail.pavkascool.hometask3.contacts;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -21,7 +20,7 @@ import com.gmail.pavkascool.hometask3.Person;
 import com.gmail.pavkascool.hometask3.PersonDao;
 import com.gmail.pavkascool.hometask3.R;
 
-public class FragmentEditNew extends Fragment implements View.OnClickListener {
+public class FragmentEdit extends Fragment implements View.OnClickListener {
     private FragmentDatabase db = FragmentApplication.getInstance().getDatabase();
     private TextView telOrMail;
     private EditText name, contact;
@@ -29,8 +28,8 @@ public class FragmentEditNew extends Fragment implements View.OnClickListener {
     private int index;
     private FragmentInteractor interactor;
 
-    public static FragmentEditNew newInstance(int index) {
-        FragmentEditNew fragment = new FragmentEditNew();
+    public static FragmentEdit newInstance(int index) {
+        FragmentEdit fragment = new FragmentEdit();
         fragment.index = index;
         return fragment;
     }
@@ -57,7 +56,7 @@ public class FragmentEditNew extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_edit_new, container, false);
+        View v = inflater.inflate(R.layout.fragment_edit, container, false);
         telOrMail = v.findViewById(R.id.contact);
         name = v.findViewById(R.id.edit_name);
         contact = v.findViewById(R.id.edit_contact);

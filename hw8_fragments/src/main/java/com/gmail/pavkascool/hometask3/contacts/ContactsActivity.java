@@ -23,19 +23,19 @@ public class ContactsActivity extends AppCompatActivity implements FragmentInter
     @Override
     public void goToContacts() {
 
-        replaceFragment(FragmentContactsNew.newInstance());
+        replaceFragment(FragmentContacts.newInstance());
     }
     @Override
     public void goToAdd() {
 
-        replaceFragment(FragmentAddNew.newInstance());
+        replaceFragment(FragmentAdd.newInstance());
     }
 
 
     @Override
     public void goToEdit(int index) {
 
-        replaceFragment(FragmentEditNew.newInstance(index));
+        replaceFragment(FragmentEdit.newInstance(index));
     }
 
     private void replaceFragment(Fragment fragment) {
