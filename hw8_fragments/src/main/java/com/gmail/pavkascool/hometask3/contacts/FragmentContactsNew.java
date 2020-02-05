@@ -69,6 +69,11 @@ public class FragmentContactsNew extends Fragment implements View.OnClickListene
         super.onAttach(context);
         interactor = (FragmentInteractor) context;
     }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interactor = null;
+    }
 
 
     @Override

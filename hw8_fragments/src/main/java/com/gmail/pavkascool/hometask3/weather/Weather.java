@@ -7,8 +7,6 @@ import com.gmail.pavkascool.hometask3.weather.IconHolder;
 
 public class Weather {
     private String location, temp, desc, iconCode, time;
-    private Bitmap weatherImage;
-    IconHolder iconHolder = IconHolder.getInstance();
 
     public void setTime(String time) {
         this.time = time;
@@ -50,12 +48,5 @@ public class Weather {
         this.desc = desc;
     }
 
-    public Bitmap getWeatherImage() {
-        return weatherImage;
-    }
-
-    public void setWeatherImage(Bitmap weatherImage) {
-        this.weatherImage = weatherImage;
-    }
 }
 

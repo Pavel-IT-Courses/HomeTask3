@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".contacts.ContactsActivityNew">
+    tools:context=".contacts.ContactsActivity">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

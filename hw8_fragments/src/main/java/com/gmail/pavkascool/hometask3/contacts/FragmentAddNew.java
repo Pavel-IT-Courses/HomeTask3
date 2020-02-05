@@ -85,6 +85,12 @@ public class FragmentAddNew extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        interactor = null;
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch(v.getId()) {

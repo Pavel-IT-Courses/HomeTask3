@@ -1,6 +1,5 @@
 package com.gmail.pavkascool.hometask3.contacts;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -9,13 +8,13 @@ import android.os.Bundle;
 
 import com.gmail.pavkascool.hometask3.R;
 
-public class ContactsActivityNew extends AppCompatActivity implements FragmentInteractor{
+public class ContactsActivity extends AppCompatActivity implements FragmentInteractor{
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contacts_new);
+        setContentView(R.layout.activity_contacts);
         if(savedInstanceState == null) goToContacts();
 
     }

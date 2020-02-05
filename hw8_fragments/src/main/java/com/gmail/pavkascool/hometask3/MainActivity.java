@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.gmail.pavkascool.hometask3.contacts.ContactsActivityNew;
-import com.gmail.pavkascool.hometask3.weather.WeatherActivity;
+import com.gmail.pavkascool.hometask3.contacts.ContactsActivity;
+import com.gmail.pavkascool.hometask3.weather.WeatherActivityNew;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = null;
         switch(v.getId()) {
             case R.id.button_contacts:
-                intent = new Intent(this, ContactsActivityNew.class);
+                intent = new Intent(this, ContactsActivity.class);
                 break;
             case R.id.button_weather:
-                intent = new Intent(this, WeatherActivity.class);
+                intent = new Intent(this, WeatherActivityNew.class);
                 break;
         }
         startActivity(intent);

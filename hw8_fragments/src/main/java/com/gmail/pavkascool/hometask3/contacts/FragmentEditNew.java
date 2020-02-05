@@ -47,6 +47,11 @@ public class FragmentEditNew extends Fragment implements View.OnClickListener {
         super.onAttach(context);
         interactor = (FragmentInteractor)context;
     }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interactor = null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
