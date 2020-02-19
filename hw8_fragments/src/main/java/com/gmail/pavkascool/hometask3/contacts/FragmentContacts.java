@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 
+import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -143,7 +144,6 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             String contactType;
             int image;
             int color;
-            File photo = new File(FILENAME_PREFIX + p.getId());
 
             if(p.isHasEmail()) {
                 contactType = "e-mail: ";
@@ -157,12 +157,18 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             }
             personViewHolder.contactView.setText(contactType + p.getContact());
 
+            File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            String imageId = FILENAME_PREFIX + p.getId() + ".jpg";
+            System.out.println("Showing the list, IMAGE ID = " + imageId);
+            File photo = new File(storageDir, imageId);
+
             if(photo.exists()) {
                 System.out.println("IN INIT PHOTO EXISTS, photo = " + photo.getName());
                 Bitmap bitmap = ImageUtils.decodeBitmapFromFile(photo);
                 BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
                 System.out.println("DRAWABLE = " + bd);
-                personViewHolder.imageView.setImageDrawable(bd);
+
+                personViewHolder.imageView.setImageDrawable(getContext().getDrawable(R.drawable.add_person));
             } else {
                 personViewHolder.imageView.setImageResource(image);
                 personViewHolder.imageView.setColorFilter(color);

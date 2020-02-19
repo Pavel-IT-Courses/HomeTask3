@@ -100,7 +100,7 @@ public class FragmentAdd extends Fragment implements View.OnClickListener {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("telOrMail", phoneOrEmail);
-        //outState.putParcelable(picture);
+
     }
 
     @Override
@@ -142,8 +142,6 @@ public class FragmentAdd extends Fragment implements View.OnClickListener {
                             FileOutputStream fos = null;
                             try {
                                 File photoFile = CameraUtils.preparePhotoFile(getContext(), index);
-                                //Intent photoIntent = CameraUtils.prepareCameraIntent(getContext(), photoFile);
-
                                 fos = new FileOutputStream(photoFile);
                                 System.out.println("Yes, File Output is " + fos + ", File = " + photoFile.getName());
                                 picture.compress(Bitmap.CompressFormat.JPEG, 100, fos);

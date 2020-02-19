@@ -23,9 +23,13 @@ public class CameraUtils {
     }
 
     public static File preparePhotoFile(@NonNull Context context, long id) throws IOException {
-        String imageFileName = FILENAME_PREFIX + id;
+        String imageFileName = FILENAME_PREFIX + id + ".jpg";
+        System.out.println("INSIDE UTILITY File = " + imageFileName);
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        return File.createTempFile(imageFileName, ".jpg", storageDir);
+        //File file = File.createTempFile(imageFileName, ".jpg", storageDir);
+        File file = new File(storageDir, imageFileName);
+        System.out.println("THIS IS THE FILE: " + file.getAbsolutePath());
+        return file;
     }
 
     @Nullable
