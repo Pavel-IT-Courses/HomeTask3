@@ -2,7 +2,9 @@ package com.gmail.pavkascool.hometask3.contacts;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,15 +23,22 @@ import com.gmail.pavkascool.hometask3.FragmentApplication;
 import com.gmail.pavkascool.hometask3.FragmentDatabase;
 import com.gmail.pavkascool.hometask3.Person;
 import com.gmail.pavkascool.hometask3.R;
+import com.gmail.pavkascool.hometask3.contacts.utils.ImageUtils;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static com.gmail.pavkascool.hometask3.contacts.utils.CameraUtils.FILENAME_PREFIX;
 
 public class FragmentContacts extends Fragment implements View.OnClickListener {
     private Button addContact;
     private RecyclerView recyclerView;
     private PersonAdapter personAdapter;
     private List<Person> items;
+    private Set<Long> ids;
     private FragmentInteractor interactor;
     private FragmentDatabase db;
 
@@ -93,16 +102,25 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
 
     private void initItems() {
         items = new ArrayList<>();
+        ids = new HashSet<>();
         Thread t= new Thread(new Runnable() {
             @Override
             public void run() {
                 List<Person> persons = db.personDao().getAll();
                 if(persons != null && !persons.isEmpty()) {
                     items.addAll(persons);
+                    for(Person p: persons) {
+                        ids.add(p.getId());
+                    }
                 }
             }
         });
         t.start();
+    }
+
+    private BitmapDrawable getPictureFromFile(File file){
+        Bitmap bitmap = ImageUtils.decodeBitmapFromFile(file);
+        return new BitmapDrawable(getResources(), bitmap);
     }
 
 
@@ -125,6 +143,8 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             String contactType;
             int image;
             int color;
+            File photo = new File(FILENAME_PREFIX + p.getId());
+
             if(p.isHasEmail()) {
                 contactType = "e-mail: ";
                 image = R.drawable.contact_mail;
@@ -136,8 +156,17 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
                 color = Color.BLUE;
             }
             personViewHolder.contactView.setText(contactType + p.getContact());
-            personViewHolder.imageView.setImageResource(image);
-            personViewHolder.imageView.setColorFilter(color);
+
+            if(photo.exists()) {
+                System.out.println("IN INIT PHOTO EXISTS, photo = " + photo.getName());
+                Bitmap bitmap = ImageUtils.decodeBitmapFromFile(photo);
+                BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
+                System.out.println("DRAWABLE = " + bd);
+                personViewHolder.imageView.setImageDrawable(bd);
+            } else {
+                personViewHolder.imageView.setImageResource(image);
+                personViewHolder.imageView.setColorFilter(color);
+            }
 
         }
 

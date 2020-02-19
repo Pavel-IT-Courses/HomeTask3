@@ -69,7 +69,8 @@ public class FragmentEdit extends Fragment implements View.OnClickListener {
             @Override
             public void run() {
                 Person person = db.personDao().getById(index);
-                final String n = person.getName();
+                //final String n = person.getName();
+                final String n = person.getId() + "";
                 final String c = person.getContact();
                 final boolean hasEmail = person.isHasEmail();
                 getActivity().runOnUiThread(new Runnable() {
