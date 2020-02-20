@@ -68,7 +68,7 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
 
         ImageView window = v.findViewById(R.id.window);
         File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        String imageId = FILENAME_PREFIX + 10 + ".jpg";
+        String imageId = FILENAME_PREFIX + 42 + ".jpg";
         File photo = new File(storageDir, imageId);
         bitmap = ImageUtils.decodeBitmapFromFile(photo);
         window.setImageBitmap(bitmap);
@@ -176,8 +176,8 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             String imageId = FILENAME_PREFIX + p.getId() + ".jpg";
             System.out.println("Showing the list, IMAGE ID = " + imageId);
             File photo = new File(storageDir, imageId);
-            //personViewHolder.imageView.setImageBitmap(bitmap);
-            Picasso.with(getContext()).load(photo).into(personViewHolder.imageView);
+            personViewHolder.imageView.setImageBitmap(bitmap);
+            //Picasso.with(getContext()).load(photo).into(personViewHolder.imageView);
 
 //            if(photo.exists()) {
 //                System.out.println("IN INIT PHOTO EXISTS, photo = " + photo.getName());
