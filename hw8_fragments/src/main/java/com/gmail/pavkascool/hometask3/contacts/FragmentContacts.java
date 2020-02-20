@@ -25,6 +25,7 @@ import com.gmail.pavkascool.hometask3.FragmentDatabase;
 import com.gmail.pavkascool.hometask3.Person;
 import com.gmail.pavkascool.hometask3.R;
 import com.gmail.pavkascool.hometask3.contacts.utils.ImageUtils;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -176,6 +177,7 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             System.out.println("Showing the list, IMAGE ID = " + imageId);
             File photo = new File(storageDir, imageId);
             //personViewHolder.imageView.setImageBitmap(bitmap);
+            Picasso.with(getContext()).load(photo).into(personViewHolder.imageView);
 
 //            if(photo.exists()) {
 //                System.out.println("IN INIT PHOTO EXISTS, photo = " + photo.getName());
@@ -213,7 +215,7 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             nameView = itemView.findViewById(R.id.name);
             contactView = itemView.findViewById(R.id.contact);
             imageView = itemView.findViewById(R.id.image);
-            imageView.setImageBitmap(bitmap);
+            //imageView.setImageBitmap(bitmap);
         }
     }
 
