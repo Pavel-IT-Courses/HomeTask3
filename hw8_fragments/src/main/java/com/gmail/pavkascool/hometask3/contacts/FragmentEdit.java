@@ -4,6 +4,7 @@ package com.gmail.pavkascool.hometask3.contacts;
 import android.content.Context;
 import android.os.Bundle;
 
+import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -19,6 +20,10 @@ import com.gmail.pavkascool.hometask3.FragmentDatabase;
 import com.gmail.pavkascool.hometask3.Person;
 import com.gmail.pavkascool.hometask3.PersonDao;
 import com.gmail.pavkascool.hometask3.R;
+
+import java.io.File;
+
+import static com.gmail.pavkascool.hometask3.contacts.utils.CameraUtils.FILENAME_PREFIX;
 
 public class FragmentEdit extends Fragment implements View.OnClickListener {
     private FragmentDatabase db = FragmentApplication.getInstance().getDatabase();
@@ -121,6 +126,11 @@ public class FragmentEdit extends Fragment implements View.OnClickListener {
                         PersonDao dao = db.personDao();
                         Person person = dao.getById(index);
                         dao.delete(person);
+
+                        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                        String imageId = FILENAME_PREFIX + index + ".jpg";
+                        File photo = new File(storageDir, imageId);
+                        photo.delete();
 
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
