@@ -124,10 +124,6 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
         t.start();
     }
 
-    private BitmapDrawable getPictureFromFile(File file){
-        Bitmap bitmap = ImageUtils.decodeBitmapFromFile(file);
-        return new BitmapDrawable(getResources(), bitmap);
-    }
 
 
     private class PersonAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
