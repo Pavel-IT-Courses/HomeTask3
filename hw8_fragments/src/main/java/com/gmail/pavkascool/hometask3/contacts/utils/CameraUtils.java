@@ -24,23 +24,9 @@ public class CameraUtils {
 
     public static File preparePhotoFile(@NonNull Context context, long id) throws IOException {
         String imageFileName = FILENAME_PREFIX + id + ".jpg";
-        System.out.println("INSIDE UTILITY File = " + imageFileName);
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //File file = File.createTempFile(imageFileName, ".jpg", storageDir);
         File file = new File(storageDir, imageFileName);
-        System.out.println("THIS IS THE FILE: " + file.getAbsolutePath());
         return file;
-    }
-
-    @Nullable
-    public static Intent prepareCameraIntent(@NonNull Context context, @NonNull File photoTempFile){
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
-            Uri photoURI = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authorities), photoTempFile);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            return takePictureIntent;
-        }
-        return null;
     }
 
     private CameraUtils() {

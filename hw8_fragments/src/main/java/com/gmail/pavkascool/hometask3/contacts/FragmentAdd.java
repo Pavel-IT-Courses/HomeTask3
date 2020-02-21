@@ -137,24 +137,20 @@ public class FragmentAdd extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         long index = db.personDao().insert(person);
-                        System.out.println("Index = " + index);
                         if (picture != null) {
                             FileOutputStream fos = null;
                             try {
                                 File photoFile = CameraUtils.preparePhotoFile(getContext(), index);
                                 fos = new FileOutputStream(photoFile);
-                                System.out.println("Yes, File Output is " + fos + ", File = " + photoFile.getName());
                                 picture.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 Toast.makeText(getContext(), "Photo Not Saved", Toast.LENGTH_SHORT).show();
-                                System.out.println("I've got an Exception!");
                             }
                             finally {
                                 if(fos != null) {
                                     try {
                                         fos.close();
-                                        System.out.println("FOS is really closed!");
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

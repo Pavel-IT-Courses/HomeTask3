@@ -10,11 +10,6 @@
         android:layout_height="wrap_content"
         android:text="@string/add_contact" />
 
-    <ImageView
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:id="@+id/window"/>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec"

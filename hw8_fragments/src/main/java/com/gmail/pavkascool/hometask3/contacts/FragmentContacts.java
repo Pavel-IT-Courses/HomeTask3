@@ -45,7 +45,6 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
     private FragmentDatabase db;
 
 
-    Bitmap bitmap;
 
     public static FragmentContacts newInstance() {
         FragmentContacts fragment = new FragmentContacts();
@@ -65,15 +64,6 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_contacts, container, false);
-
-        ImageView window = v.findViewById(R.id.window);
-        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        String imageId = FILENAME_PREFIX + 10 + ".jpg";
-        File photo = new File(storageDir, imageId);
-        bitmap = ImageUtils.decodeBitmapFromFile(photo);
-        window.setImageBitmap(bitmap);
-
-
 
         addContact = v.findViewById(R.id.add);
         addContact.setOnClickListener(this);
@@ -174,22 +164,17 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
 
             File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             String imageId = FILENAME_PREFIX + p.getId() + ".jpg";
-            System.out.println("Showing the list, IMAGE ID = " + imageId);
             File photo = new File(storageDir, imageId);
-            //personViewHolder.imageView.setImageBitmap(bitmap);
-            Picasso.with(getContext()).load(photo).into(personViewHolder.imageView);
 
-//            if(photo.exists()) {
-//                System.out.println("IN INIT PHOTO EXISTS, photo = " + photo.getName());
-//                Bitmap bitmap1 = ImageUtils.decodeBitmapFromFile(photo);
-//                BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
-//                System.out.println("DRAWABLE = " + bd);
-//
-//                personViewHolder.imageView.setImageBitmap(bitmap);
-//            } else {
-//                personViewHolder.imageView.setImageResource(image);
-//                personViewHolder.imageView.setColorFilter(color);
-//            }
+            if(photo.exists()) {
+                Bitmap bitmap = ImageUtils.decodeBitmapFromFile(photo);
+                BitmapDrawable bd = new BitmapDrawable(getResources(), bitmap);
+                Picasso.with(getContext()).load(photo).into(personViewHolder.imageView);
+
+            } else {
+                personViewHolder.imageView.setImageResource(image);
+                personViewHolder.imageView.setColorFilter(color);
+            }
 
         }
 
@@ -215,7 +200,6 @@ public class FragmentContacts extends Fragment implements View.OnClickListener {
             nameView = itemView.findViewById(R.id.name);
             contactView = itemView.findViewById(R.id.contact);
             imageView = itemView.findViewById(R.id.image);
-            //imageView.setImageBitmap(bitmap);
         }
     }
 
