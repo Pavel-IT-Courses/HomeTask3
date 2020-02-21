@@ -173,6 +173,7 @@ public class FragmentAdd extends Fragment implements View.OnClickListener {
             case R.id.take:
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
+
         }
     }
 
